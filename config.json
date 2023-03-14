@@ -88,7 +88,7 @@
     ],
     "telegram": {
         "enabled": true,
-        "token": "5576098654:AAEyW8xMJ05QAb92q1mmVzm5MqJPlXT-wYo",
+        "token": "6097204215:AAEZKQ4zv9OH5MHzYQxzhyvXKI_YdrAMTbY",
         "chat_id": "162579989",
         "notification_settings": {
             "status": "on",
@@ -122,18 +122,18 @@
         "listen_port": 8080,
         "verbosity": "error",
         "enable_openapi": false,
-        "jwt_secret_key": "e8701fe78e6b6c56a6be444482b315a78311a8a8a554a5f3b4407272d54b78d9",
-        "ws_token": "LC_BEGnBGJqlI0GnyA2jm-MT1xqoM6fekg",
+        "jwt_secret_key": "5cdb447e61e28af4cd60a2221285499b244e020ec9efa16610d72d976da7b631",
+        "ws_token": "pZykQ-lCAyrEmkuKhLJpRkSYwEMlGzzFyw",
         "CORS_origins": [],
         "username": "freqtrader",
         "password": "kwzgnd16"
     },
     
     "bot_name": "freqtrade bot",
-    "user_data_dir": "/home/dw/freqtrade/user_data/",
-    "strategy_path": "/home/dw/freqtrade/user_data/",
+    "user_data_dir": "/home/hidalgomello/freqtrade/user_data/",
+    "strategy_path": "/home/hidalgomello/freqtrade/user_data/",
     "strategy": "Strategy0011",
-    "db_url": "sqlite:////home/dw/freqtrade/user_data/tradev31.sqlite",
+    "db_url": "sqlite:////home/hidalgomello/freqtrade/user_data/tradev3.sqlite",
     "logfile": "syslog:/dev/log",
     "initial_state": "running",
     "force_entry_enable": false,    
