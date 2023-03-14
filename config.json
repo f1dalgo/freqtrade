@@ -5,7 +5,7 @@
     "stake_amount": "unlimited",
     "tradable_balance_ratio": 0.99,
     "fiat_display_currency": "USD",
-    "dry_run": false,
+    "dry_run": true,
     "dry_run_wallet": 1000,
     "cancel_open_orders_on_exit": false,
     "trading_mode": "spot",
@@ -51,8 +51,8 @@
     },
     "exchange": {
         "name": "binance",
-        "key": "7SUdi5939dU1lyT6MriKaPzauImMw3yDpgnlJuFGAh0FKCDwdDsl8kGFYH9hRhFO",
-        "secret": "Pv1yVXmanmR7iq08h3xabj4bglpRNK41MpSou34BEdjJqo62n4lcowNJqzoLQ19U",
+        "key": "",
+        "secret": "",
         "ccxt_config": {},
         "ccxt_async_config": {},
         "pair_whitelist": [
