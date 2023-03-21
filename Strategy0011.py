@@ -30,12 +30,15 @@ class Strategy0011(IStrategy):
     # This attribute will be overridden if the config file contains "minimal_roi"
     # ROI table:
      # ROI table:
+    
+        # ROI table:
     minimal_roi = {
-        "0": 0.763,
-        "10116": 0.422,
-        "13357": 0.144,
-        "18302": 0
+        "0": 0.275,
+        "10996": 0.191,
+        "26857": 0.114,
+        "29872": 0
     }
+    
 
 
 
@@ -44,7 +47,7 @@ class Strategy0011(IStrategy):
     # Optimal stoploss designed for the strategy
     # This attribute will be overridden if the config file contains "stoploss"
     # Stoploss:
-    stoploss = -0.343
+    stoploss = -0.99
 
     
 
@@ -53,8 +56,8 @@ class Strategy0011(IStrategy):
 
    # Trailing stop:
     trailing_stop = True
-    trailing_stop_positive = 0.011
-    trailing_stop_positive_offset = 0.078
+    trailing_stop_positive = 0.01
+    trailing_stop_positive_offset = 0.10
     trailing_only_offset_is_reached = True
 
 
@@ -65,7 +68,7 @@ class Strategy0011(IStrategy):
     # Experimental settings (configuration will overide these if set)
     use_exit_signal = True
     exit_profit_only = False
-    ignore_roi_if_entry_signal = True
+    ignore_roi_if_entry_signal = False
 
     # Optional order type mapping
     order_types = {
@@ -75,23 +78,23 @@ class Strategy0011(IStrategy):
         'stoploss_on_exchange': False
     }
    # buy_volumeAVG = IntParameter(low=50, high=300, default=70, space='buy', optimize=True)
-    rsi_buy = IntParameter(low=1, high=100, default=51, space='buy', optimize=True)
-    rsi_sell = IntParameter(low=1, high=100, default=49, space='sell', optimize=True)
-    ema9_buy = IntParameter(low=1, high=100, default=9, space='buy', optimize=True)
+    buy_rsi = IntParameter(low=1, high=100, default=51, space='buy', optimize=True)
+    sell_rsi = IntParameter(low=1, high=100, default=49, space='sell', optimize=True)
+    buy_ema9 = IntParameter(low=7, high=21, default=9, space='buy', optimize=True)
 
     buy_params = {
         
        # 'buy_volumeAVG': 150,
         #'atr_period': 14,
         #'atr_multiplier': 2,
-        "rsi_buy": 51,
+        "buy_rsi": 50,
         
-        'ema9_buy': 9
+        'buy_ema9': 9
 
     }
     sell_params = {        
        
-        "rsi_sell": 50,
+        "sell_rsi": 50,
         
     }
 
@@ -119,16 +122,29 @@ class Strategy0011(IStrategy):
         or your hyperopt configuration, otherwise you will waste your memory and CPU usage.
         """
 
-        dataframe['ema8'] = ta.EMA(dataframe, timeperiod=3)
+        #dataframe['ema8'] = ta.EMA(dataframe, timeperiod=3)
+        #dataframe['vwap'] = ta.WMA(dataframe['close'], dataframe['volume'])
         dataframe['ema9'] = ta.EMA(dataframe, timeperiod=9)
       #  dataframe['ema21'] = ta.EMA(dataframe, timeperiod=100)
        # dataframe['adx'] = ta.ADX(dataframe)
+
+        dataframe['grown_ema9'] = (
+            ((dataframe['ema9']) > dataframe['ema9'].shift(1)) &
+            ((dataframe['ema9'].shift(1)) > dataframe['ema9'].shift(2)) 
+            #& ((dataframe['ema9'].shift(2)) > dataframe['ema9'].shift(3))
+        )
+
+        dataframe['down_ema9'] = (
+              ((dataframe['ema9']) < dataframe['ema9'].shift(1)) 
+            & ((dataframe['ema9'].shift(1)) < dataframe['ema9'].shift(2)) 
+           #& ((dataframe['ema9'].shift(2)) < dataframe['ema9'].shift(3))
+        )
          # RSI
         dataframe['rsi'] = ta.RSI(dataframe)
 
-        heikinashi = qtpylib.heikinashi(dataframe)
-        dataframe['ha_open'] = heikinashi['open']
-        dataframe['ha_close'] = heikinashi['close']
+        #heikinashi = qtpylib.heikinashi(dataframe)
+       # dataframe['ha_open'] = heikinashi['open']
+        #dataframe['ha_close'] = heikinashi['close']
 
          # Calculate the ATR
         #dataframe['atr'] = ta.ATR(dataframe, timeperiod=self.buy_params['atr_period'])
@@ -144,12 +160,13 @@ class Strategy0011(IStrategy):
         :return: DataFrame with buy column
         """
         dataframe.loc[
-            (
-               # (dataframe['rsi'] > self.rsi_buy.value) &
+            (   
+                (dataframe['grown_ema9']) |
+                (dataframe['rsi'] > self.buy_rsi.value) &
                # (dataframe['volume'] > dataframe['volume'].rolling(self.buy_volumeAVG.value).mean() * 4) &
-                (dataframe['ha_close'] > dataframe['ema9']) &
-                # (dataframe['ha_close'] > dataframe['ema21']) &
-                (dataframe['ha_open'] < dataframe['ha_close']) 
+                (dataframe['close'] > dataframe['ema9']) &
+              # (dataframe['ha_close'] > dataframe['wvap']) &
+                (dataframe['open'] < dataframe['close']) 
                 #(dataframe['adx'] > self.buy_adx.value) # green bar
             ),           
             
@@ -166,11 +183,10 @@ class Strategy0011(IStrategy):
         """
         dataframe.loc[
             (
-            
-               # (dataframe['rsi'] < self.rsi_sell.value) &
-                (dataframe['ha_close'] < dataframe['ema9']) &
-                #(dataframe['ha_close'] < dataframe['ema9']) &
-                (dataframe['ha_open'] > dataframe['ha_close'])   # red bar
+                (dataframe['down_ema9']) 
+                #(dataframe['rsi'] < self.rsi_sell.value) &
+                #(dataframe['close'] < dataframe['ema9']) &
+                #(dataframe['open'] > dataframe['close'])   # red bar
             ),
             'sell'] = 1
         
